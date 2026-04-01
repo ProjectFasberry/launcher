@@ -18,7 +18,6 @@ pub fn run() {
     .expect("error while running tauri application");
 }
 
-#[cfg(debug_assertions)]
 fn prevent_default() -> tauri::plugin::TauriPlugin<tauri::Wry> {
   use tauri_plugin_prevent_default::Flags;
 

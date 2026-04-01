@@ -126,7 +126,7 @@ pub async fn play_action(app: AppHandle, nickname: String) -> Result<(), String>
 
   setup_resource_pack(&game_dir);
 
-  let status = Command::new("java")
+  let status: Result<std::process::Child, std::io::Error> = Command::new("java")
     .current_dir(&game_dir)
     .arg("-Xmx2G")
     .arg("-Djava.library.path=natives")
