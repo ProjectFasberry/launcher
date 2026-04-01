@@ -1,7 +1,5 @@
-import { reatomComponent } from "@reatom/npm-react"
 import { Ctx } from '@reatom/core';
-import { tv } from 'tailwind-variants/lite';
-import { ReactNode } from 'react';
+import { tv } from 'tailwind-variants';
 import { News } from './shared/components/news';
 import { AppHeader } from "./shared/components/header";
 import { BACKGROUND_IMG } from "./shared/const";
@@ -9,6 +7,9 @@ import { Main } from "./shared/components/main";
 import { isActiveAtom, type Page, pageAtom } from "./app.model";
 import { serverStatus } from "./shared/components/main.model";
 import { news } from "./shared/components/news.model";
+import { useAtom, useCtx } from '@reatom/npm-solid-js';
+import { Component, For, Show } from 'solid-js';
+import { Dynamic } from 'solid-js/web';
 
 const buttonVariant = tv({
   base: `flex items-center cursor-pointer justify-center`,
@@ -18,62 +19,79 @@ const buttonVariant = tv({
   defaultVariants: { variant: "default" }
 })
 
-const InternalHeaderItem = reatomComponent<{ t: string, v: Page }>(({ ctx, t, v }) => {
-  const variant = ctx.spy(isActiveAtom(v)) ? "active" : "default";
+const InternalHeaderItem: Component<{ t: string, v: Page }> = (props) => {
+  const ctx = useCtx();
+  const [isActive] = useAtom(isActiveAtom(props.v))
 
   return (
     <button
-      className={buttonVariant({ variant })}
-      onClick={() => pageAtom(ctx, v)}
+      class={buttonVariant({ variant: isActive() ? "active" : "default" })}
+      onClick={() => pageAtom(ctx, props.v)}
     >
-      <p className="uppercase text-2xl font-semibold">{t}</p>
+      <p class="uppercase text-2xl font-semibold">{props.t}</p>
     </button>
   )
-}, "InternalHeaderItem")
+}
 
 const ITEMS = [{ t: "Главная", v: "main" }, { t: "Новости", v: "news" }] as const
 
 const InternalHeader = () => {
   return (
-    <div className='flex items-center justify-center gap-6 w-full'>
-      {ITEMS.map((m) => <InternalHeaderItem key={m.v} {...m} />)}
+    <div class="flex items-center justify-center gap-6 w-full">
+      <For each={ITEMS}>
+        {(item) => <InternalHeaderItem t={item.t} v={item.v} />}
+      </For>
     </div>
   )
 }
 
-const COMPONENTS: Partial<Record<Page, { node: ReactNode, event?: (ctx: Ctx) => void }>> = {
+type PageConfig = {
+  component: Component;
+  event?: (ctx: Ctx) => void;
+};
+
+const COMPONENTS: Record<Page, PageConfig> = {
   "main": {
-    node: <Main />,
+    component: Main,
     event: (ctx) => serverStatus(ctx)
   },
   "news": {
-    node: <News />,
+    component: News,
     event: (ctx) => news.fetch(ctx)
   }
 }
 
 pageAtom.onChange((ctx, data) => COMPONENTS[data]?.event?.(ctx))
 
-const InternalContent = reatomComponent(({ ctx }) => COMPONENTS[ctx.spy(pageAtom)]?.node, "InternalContent")
+const InternalContent = () => {
+  const [page] = useAtom(pageAtom)
+  const config = () => COMPONENTS[page()];
+
+  return (
+    <Show when={config()} fallback={<div>Not Found</div>}>
+      <Dynamic component={config()?.component} />
+    </Show>
+  );
+}
 
 const AppBackground = () => {
   return (
     <>
       <div
-        style={{ backgroundImage: `url(${BACKGROUND_IMG})` }}
-        className="absolute z-[-1] w-full h-full bg-cover bg-center"
+        style={{ "background-image": `url(${BACKGROUND_IMG})` }}
+        class="absolute z-[-1] w-full h-full bg-cover bg-center"
       />
-      <div className='absolute z-1 bg-linear-to-bl from-black/20 via-black/70 to-black/80 h-full w-full' />
+      <div class='absolute z-1 bg-linear-to-bl from-black/20 via-black/70 to-black/80 h-full w-full' />
     </>
   )
 }
 
 export const App = () => {
   return (
-    <div className="relative overflow-hidden flex flex-col w-vw h-dvh">
+    <div class="relative overflow-hidden flex flex-col w-vw h-dvh">
       <AppBackground />
       <AppHeader />
-      <main className="flex flex-col gap-12 items-center w-full min-h-0 relative px-4 z-2 h-full mt-4 overflow-hidden">
+      <main class="flex flex-col gap-12 items-center w-full min-h-0 relative px-4 z-2 h-full mt-4 overflow-hidden">
         <InternalHeader />
         <InternalContent />
       </main>

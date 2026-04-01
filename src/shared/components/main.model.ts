@@ -25,7 +25,7 @@ export const serverStatus = reatomAsync(async (ctx) => {
   if ("error" in res) throw new Error(res.error)
 
   return res.data
-}).pipe(
+}, "serverStatus").pipe(
   withDataAtom(), 
   withStatusesAtom(), 
   withCache({ swr: false })

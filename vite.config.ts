@@ -1,15 +1,16 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
 import UnoCSS from 'unocss/vite'
 import svg from '@neodx/svg/vite';
+import solidPlugin from 'vite-plugin-solid';
+import devtools from 'solid-devtools/vite';
 
-// @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig(async () => ({
   plugins: [
-    react(),
+    solidPlugin(),
     UnoCSS(),
+    devtools(), 
     svg({
       inputRoot: 'src/assets/svg',
       output: 'public/sprites',
@@ -46,13 +47,8 @@ export default defineConfig(async () => ({
         manualChunks(id) {
           if (!id.includes('node_modules')) return;
 
-          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/scheduler/')) {
-            return 'react-core';
-          }
-
-          for (const chunkName of ['reatom']) {
-            if (id.includes(chunkName)) return chunkName;
-          }
+          if (id.includes('node_modules/solid-js')) return 'solid-core';
+          if (id.includes('reatom')) return 'reatom';
 
           return 'libs-vendor';
         }
