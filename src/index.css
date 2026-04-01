@@ -1,0 +1,42 @@
+@font-face {
+  font-family: "PIXY";
+  src: url("/fonts/PIXY.ttf") format("truetype");
+}
+
+@layer base {
+  * {
+    font-family: "Golos Text", sans-serif;
+  }
+
+  body {
+    color: white;
+  }
+  
+  button {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+
+  .icon,
+  .icon-x,
+  .icon-y {
+    @apply select-none fill-current inline-block text-inherit box-content;
+    vertical-align: -0.125em;
+  }
+
+  .icon,
+  .icon-x {
+    @apply w-[1em];
+  }
+
+  .icon,
+  .icon-y {
+    @apply h-[1em];
+  }
+
+  .scrollable {
+    @apply scrollbar scrollbar-thumb-color-neutral-500 scrollbar-rounded scrollbar-track-color-black/0;
+  }
+}
