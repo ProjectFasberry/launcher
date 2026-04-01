@@ -53,9 +53,7 @@ const NewsList = reatomComponent(({ ctx }) => {
 }, "NewsList")
 
 const NewsLoaderItem = () => {
-  const { ref, inView } = useInView({ 
-    threshold: 0 
-  });
+  const { ref, inView } = useInView({  threshold: 0 });
 
   useUpdate((ctx) => newsState.inView(ctx, inView), [inView])
 

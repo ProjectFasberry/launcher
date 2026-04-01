@@ -1,6 +1,6 @@
 import { reatomComponent, useUpdate } from "@reatom/npm-react";
 import { listen } from "@tauri-apps/api/event";
-import { tv } from "tailwind-variants/lite";
+import { tv } from "tailwind-variants";
 import { Icon } from "../ui/icon";
 import { dwnldState, serverStatus, startPlay } from "./main.model";
 

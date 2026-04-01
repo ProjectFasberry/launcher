@@ -1,5 +1,3 @@
-// import { invoke } from "@tauri-apps/api/core";
-
 import { reatomComponent } from "@reatom/npm-react"
 import { Ctx } from '@reatom/core';
 import { tv } from 'tailwind-variants/lite';
@@ -56,10 +54,7 @@ const COMPONENTS: Partial<Record<Page, { node: ReactNode, event?: (ctx: Ctx) => 
 
 pageAtom.onChange((ctx, data) => COMPONENTS[data]?.event?.(ctx))
 
-const InternalContent = reatomComponent(({ ctx }) => 
-  COMPONENTS[ctx.spy(pageAtom)]?.node, 
-  "InternalContent"
-)
+const InternalContent = reatomComponent(({ ctx }) => COMPONENTS[ctx.spy(pageAtom)]?.node, "InternalContent")
 
 const AppBackground = () => {
   return (
